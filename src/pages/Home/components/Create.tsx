@@ -146,10 +146,11 @@ const Create = () => {
 
                 <Item name='barrelType' rules={[{ required: true, },]} label='瓦斯種類'>
                     <Group value={barrelType} onChange={handlerBarrelType} >
-                        <Radio.Button value="5">5 kg</Radio.Button>
-                        <Radio.Button value="10">10 kg</Radio.Button>
-                        <Radio.Button value="20">20 kg</Radio.Button>
-                        <Radio.Button value="50">50 kg</Radio.Button>
+                        <Radio.Button value='5'>5 kg</Radio.Button>
+                        <Radio.Button value='10'>10 kg</Radio.Button>
+                        <Radio.Button value='16'>16 公斤</Radio.Button>
+                        <Radio.Button value='20'>20 kg</Radio.Button>
+                        <Radio.Button value='50'>50 kg</Radio.Button>
                     </Group>
                 </Item>
 

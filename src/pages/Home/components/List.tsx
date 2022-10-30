@@ -297,7 +297,6 @@ const List = () => {
 
     //Update Edit Order
     const handlerUpdateEditOrder = () => {
-
         if (!editingOrder.name || !editingOrder.address || !editingOrder.phone) {
             notification.config({
                 placement: 'bottomRight'
@@ -354,7 +353,6 @@ const List = () => {
 
         if (e === null)
             return;
-
 
         setEditingOrder((pre: any) => {
 
