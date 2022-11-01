@@ -12,7 +12,8 @@ export const Config = {
         delete: process.env.REACT_APP_API_DELETE,
         update: process.env.REACT_APP_API_UPDATE,
         searchNamePhoneAddress: process.env.REACT_APP_API_SEARCH_NAME_PHONE_ADDRESS,
-        searchMonth: process.env.REACT_APP_API_SEARCH_MONTH,
+        currentMonth: process.env.REACT_APP_API_CURRENT_MONTH,
+        currentPeriod: process.env.REACT_APP_API_CURRENT_PERIOD,
     },
 
 }

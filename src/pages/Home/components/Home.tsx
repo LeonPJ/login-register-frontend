@@ -46,7 +46,7 @@ const Home = () => {
 
         const reqOptions = {
             // url: process.env.REACT_APP_API_SEARCH_MONTH!,
-            url: Config.database.searchMonth,
+            url: Config.database.currentMonth,
             method: "GET",
             headers: headersList,
         }
