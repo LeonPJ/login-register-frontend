@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 // import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import { useNavigate } from 'react-router-dom';
@@ -29,14 +29,7 @@ const Home = () => {
 
     let navigate = useNavigate();
 
-    useEffect(() => {
-        if (cookie.load('authToken') === undefined)
-            navigate('/', { replace: true });
-
-        loadData();
-    }, [navigate]);
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
 
         notification.config({
             placement: 'bottomRight'
@@ -110,7 +103,14 @@ const Home = () => {
                     description: `${error}`
                 });
             });
-    }
+    }, [navigate]);
+
+    useEffect(() => {
+        if (cookie.load('authToken') === undefined)
+            navigate('/', { replace: true });
+
+        loadData();
+    }, [navigate, loadData]);
 
     return (
         <>

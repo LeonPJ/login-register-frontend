@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 // import ReactDOM from 'react-dom';
 import 'antd/dist/antd.min.css';
 import cookie from 'react-cookies';
@@ -22,20 +22,11 @@ const List = () => {
 
     let navigate = useNavigate();
 
-    useEffect(() => {
-        if (cookie.load('authToken') === undefined)
-            navigate('/', { replace: true });
-
-        // console.log(cookie.load('authToken').length);
-
-        loadData();
-    }, [navigate]);
-
     notification.config({
         placement: 'bottomRight'
     });
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         const headersList = {
             "auth-token": cookie.load('authToken'),
             "Content-Type": "application/json",
@@ -61,7 +52,16 @@ const List = () => {
                     description: `${error}`
                 });
             });
-    }
+    }, [navigate]);
+
+    useEffect(() => {
+        if (cookie.load('authToken') === undefined)
+            navigate('/', { replace: true });
+
+        // console.log(cookie.load('authToken').length);
+
+        loadData();
+    }, [navigate, loadData]);
 
     const ordersResult = ordersData.map((orders: any) => ({
         ...orders,
