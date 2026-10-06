@@ -12,7 +12,7 @@
 
 - 當月訂單筆數、應收、實收、出貨與回收
 - 5／10／16／20／50 公斤各自的出貨筆數
-- 姓名、電話、地址為全等比對
+- 姓名、電話、地址會找出包含這段文字的訂單
 
 ## 頁面
 
@@ -34,12 +34,12 @@ git clone https://github.com/LeonPJ/login-register-frontend.git
 cd login-register-frontend
 cp .env.example .env
 npm install
-PORT=3001 npm start
+npm start
 ```
 
-瀏覽器打開 <http://localhost:3001>。
+瀏覽器打開 <http://localhost:3000>。
 
-後端預設聽 `3000`，這個開發伺服器也是。所以上面把前端改到 `3001`，`.env` 裡的 API 仍指向 `http://localhost:3000`。
+後端預設聽 `4000`，並允許從 `http://localhost:3000` 來的請求。前端維持 `3000`，`.env.example` 裡的 API 指向 `http://localhost:4000`。
 
 正式打包：
 
@@ -51,7 +51,7 @@ npm run build
 
 ## 環境變數
 
-變數名稱與預設位址在 [`.env.example`](./.env.example)。後端不是 `localhost:3000` 時，改掉主機位址即可。
+變數名稱與預設位址在 [`.env.example`](./.env.example)。後端不是 `localhost:4000` 時，改掉主機位址即可。
 
 - 刪除、更新會再接 `/:id`
 - 搜尋會再接 `/:type/:value`（`name`、`phone` 或 `address`）
