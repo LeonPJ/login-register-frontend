@@ -32,14 +32,13 @@
 ```bash
 git clone https://github.com/LeonPJ/login-register-frontend.git
 cd login-register-frontend
-cp .env.example .env
 npm install
 npm start
 ```
 
 瀏覽器打開 <http://localhost:3000>。
 
-後端預設聽 `4000`，並允許從 `http://localhost:3000` 來的請求。前端維持 `3000`，`.env.example` 裡的 API 指向 `http://localhost:4000`。
+後端預設聽 `4000`，並允許從 `http://localhost:3000` 來的請求。前端維持 `3000`。啟動前要有 `.env`，內容見下方。
 
 正式打包：
 
@@ -51,7 +50,20 @@ npm run build
 
 ## 環境變數
 
-變數名稱與預設位址在 [`.env.example`](./.env.example)。後端不是 `localhost:4000` 時，改掉主機位址即可。
+在專案根目錄建立 `.env`。後端不是 `localhost:4000` 時，改掉主機位址即可。
+
+```
+REACT_APP_API_LOGIN=http://localhost:4000/user/login
+REACT_APP_API_NEW_PASSWORD=http://localhost:4000/user/newpassword
+REACT_APP_API_FORGOT_PASSWORD=http://localhost:4000/user/forgotpassword
+REACT_APP_API_READ=http://localhost:4000/order/get
+REACT_APP_API_CREATE=http://localhost:4000/order/create
+REACT_APP_API_DELETE=http://localhost:4000/order/delete
+REACT_APP_API_UPDATE=http://localhost:4000/order/update
+REACT_APP_API_SEARCH_NAME_PHONE_ADDRESS=http://localhost:4000/order/get/search
+REACT_APP_API_CURRENT_MONTH=http://localhost:4000/order/get/current/month
+REACT_APP_API_CURRENT_PERIOD=http://localhost:4000/order/get/current
+```
 
 - 刪除、更新會再接 `/:id`
 - 搜尋會再接 `/:type/:value`（`name`、`phone` 或 `address`）
