@@ -9,6 +9,7 @@ import moment from 'moment';
 import cookie from 'react-cookies';
 
 import { Config } from '../../../config';
+import { redirectIfInvalidToken } from '../../../authError';
 
 const { Title } = Typography;
 
@@ -21,6 +22,7 @@ const Home = () => {
     const [paymentMonth, setPaymentMonth] = useState(0);
     const [barrelType5Month, setBarrelType5Month] = useState(0);
     const [barrelType10Month, setBarrelType10Month] = useState(0);
+    const [barrelType16Month, setBarrelType16Month] = useState(0);
     const [barrelType20Month, setBarrelType20Month] = useState(0);
     const [barrelType50Month, setBarrelType50Month] = useState(0);
 
@@ -60,6 +62,7 @@ const Home = () => {
                 let paymentMonth = 0;
                 let barrelType5Month = 0;
                 let barrelType10Month = 0;
+                let barrelType16Month = 0;
                 let barrelType20Month = 0;
                 let barrelType50Month = 0;
 
@@ -73,6 +76,8 @@ const Home = () => {
                         barrelType5Month = barrelType5Month + 1;
                     else if (res.data[orders].barrelType === 10)
                         barrelType10Month = barrelType10Month + 1;
+                    else if (res.data[orders].barrelType === 16)
+                        barrelType16Month = barrelType16Month + 1;
                     else if (res.data[orders].barrelType === 20)
                         barrelType20Month = barrelType20Month + 1;
                     else if (res.data[orders].barrelType === 50)
@@ -91,11 +96,15 @@ const Home = () => {
                 setBackBarrelMonth(backBarrelMonth);// 回收瓶數
                 setBarrelType5Month(barrelType5Month);// 5kg 出貨
                 setBarrelType10Month(barrelType10Month);// 10kg 出貨
+                setBarrelType16Month(barrelType16Month);// 16kg 出貨
                 setBarrelType20Month(barrelType20Month);// 20kg 出貨
                 setBarrelType50Month(barrelType50Month);// 50kg 出貨
 
             })
             .catch(async (error) => {
+                if (redirectIfInvalidToken(error, navigate))
+                    return;
+
                 notification.warning({
                     message: `每曰資料顯示失敗, 請從新整理頁面`,
                     description: `${error}`
@@ -112,10 +121,11 @@ const Home = () => {
                 <Title level={3}>實收金額 {paymentMonth} 元</Title>
                 <Title level={3}>出貨 {sendBarrelMonth} 瓶</Title>
                 <Title level={3}>回收 {backBarrelMonth} 瓶</Title>
-                <Title level={3}>5kg出貨 {barrelType5Month} kg</Title>
-                <Title level={3}>10kg出貨 {barrelType10Month} kg</Title>
-                <Title level={3}>20kg出貨 {barrelType20Month} kg</Title>
-                <Title level={3}>50kg出貨 {barrelType50Month} kg</Title>
+                <Title level={3}>5kg出貨 {barrelType5Month} 筆</Title>
+                <Title level={3}>10kg出貨 {barrelType10Month} 筆</Title>
+                <Title level={3}>16kg出貨 {barrelType16Month} 筆</Title>
+                <Title level={3}>20kg出貨 {barrelType20Month} 筆</Title>
+                <Title level={3}>50kg出貨 {barrelType50Month} 筆</Title>
             </Space>
         </>
     )

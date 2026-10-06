@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import { Config } from '../../../config';
+import { redirectIfInvalidToken } from '../../../authError';
 
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
@@ -83,6 +84,9 @@ const Create = () => {
                 form.resetFields();
             })
             .catch(async (error) => {
+                if (redirectIfInvalidToken(error, navigate))
+                    return;
+
                 notification.warning({
                     message: `訂單建立失敗`,
                     description: `${error}`

@@ -9,6 +9,7 @@ import { Input, Table, Tag, Modal, Form, InputNumber, Select, Radio, Typography,
 import { EditOutlined, DeleteOutlined, WarningOutlined } from '@ant-design/icons';
 
 import { Config } from '../../../config';
+import { redirectIfInvalidToken } from '../../../authError';
 
 const { Item } = Form;
 
@@ -52,6 +53,9 @@ const List = () => {
                 setOrdersData(res.data.filter((orders: any) => orders.isDeleted !== true));
             })
             .catch(async (error) => {
+                if (redirectIfInvalidToken(error, navigate))
+                    return;
+
                 notification.warning({
                     message: `載入失敗, 請從新整理頁面`,
                     description: `${error}`
@@ -208,6 +212,9 @@ const List = () => {
                     setOrdersData(res.data.filter((orders: any) => orders.isDeleted !== true));
                 })
                 .catch(async (error) => {
+                    if (redirectIfInvalidToken(error, navigate))
+                        return;
+
                     notification.warning({
                         message: `清空搜尋失敗`,
                         description: `${error}`
@@ -218,7 +225,7 @@ const List = () => {
 
         const reqOptions = {
             // url: `${process.env.REACT_APP_API_SEARCH_NAME_PHONE_ADDRESS!}/${searchType}/${searchValue}`,
-            url: `${Config.database.searchNamePhoneAddress}/${searchType}/${searchValue}`,
+            url: `${Config.database.searchNamePhoneAddress}/${searchType}/${encodeURIComponent(searchValue)}`,
             method: "GET",
             headers: headersList,
         }
@@ -228,6 +235,9 @@ const List = () => {
                 setOrdersData(res.data.filter((orders: any) => orders.isDeleted !== true));
             })
             .catch(async (error) => {
+                if (redirectIfInvalidToken(error, navigate))
+                    return;
+
                 notification.warning({
                     message: `搜尋失敗`,
                     description: `${error}`
@@ -248,37 +258,34 @@ const List = () => {
             icon: <WarningOutlined />,
             okText: '確認',
             cancelText: '取消',
-            onOk() {
+            async onOk() {
+                const headersList = {
+                    "auth-token": cookie.load('authToken'),
+                    "Content-Type": "application/json",
+                }
 
-                setOrdersData((orders: any) => {
+                const reqOptions = {
+                    // url: `${process.env.REACT_APP_API_DELETE!}/${event._id}`,
+                    url: `${Config.database.delete}/${event._id}`,
+                    method: "DELETE",
+                    headers: headersList,
+                }
 
-                    const headersList = {
-                        "auth-token": cookie.load('authToken'),
-                        "Content-Type": "application/json",
-                    }
+                try {
+                    await axios.request(reqOptions);
+                    setOrdersData((orders: any) => orders.filter((order: any) => order._id !== event._id));
+                    notification.success({
+                        message: `訂單刪除成功`
+                    });
+                } catch (error) {
+                    if (redirectIfInvalidToken(error, navigate))
+                        return;
 
-                    const reqOptions = {
-                        // url: `${process.env.REACT_APP_API_DELETE!}/${event._id}`,
-                        url: `${Config.database.delete}/${event._id}`,
-                        method: "DELETE",
-                        headers: headersList,
-                    }
-
-                    axios.request(reqOptions)
-                        .then(async (res) => {
-                            notification.success({
-                                message: `訂單刪除成功`
-                            });
-                        })
-                        .catch(async (error) => {
-                            notification.warning({
-                                message: `訂單刪除失敗`,
-                                description: `${error}`
-                            });
-                        });
-
-                    return orders.filter((order: any) => order._id !== event._id);
-                });
+                    notification.warning({
+                        message: `訂單刪除失敗`,
+                        description: `${error}`
+                    });
+                }
             }
         });
     };
@@ -296,7 +303,7 @@ const List = () => {
     }
 
     //Update Edit Order
-    const handlerUpdateEditOrder = () => {
+    const handlerUpdateEditOrder = async () => {
         if (!editingOrder.name || !editingOrder.address || !editingOrder.phone) {
             notification.config({
                 placement: 'bottomRight'
@@ -308,44 +315,39 @@ const List = () => {
             return;
         }
 
-        setOrdersData((orders: any) => {
-            return orders.map((order: any) => {
-                if (order._id === editingOrder._id) {
+        const headersList = {
+            "auth-token": cookie.load('authToken'),
+            "Content-Type": "application/json",
+        }
 
-                    const headersList = {
-                        "auth-token": cookie.load('authToken'),
-                        "Content-Type": "application/json",
-                    }
+        const reqOptions = {
+            // url: `${process.env.REACT_APP_API_UPDATE!}/${order._id}`,
+            url: `${Config.database.update}/${editingOrder._id}`,
+            method: "PATCH",
+            headers: headersList,
+            data: editingOrder,
+        }
 
-                    const reqOptions = {
-                        // url: `${process.env.REACT_APP_API_UPDATE!}/${order._id}`,
-                        url: `${Config.database.update}/${order._id}`,
-                        method: "PATCH",
-                        headers: headersList,
-                        data: editingOrder,
-                    }
-
-                    axios.request(reqOptions)
-                        .then(async (res) => {
-                            notification.success({
-                                message: `訂單更新成功`
-                            });
-                        })
-                        .catch(async (error) => {
-                            notification.warning({
-                                message: `訂單更新失敗`,
-                                description: `${error}`
-                            });
-                        });
-
+        try {
+            await axios.request(reqOptions);
+            setOrdersData((orders: any) => orders.map((order: any) => {
+                if (order._id === editingOrder._id)
                     return editingOrder;
-
-                }
-                else
-                    return order;
+                return order;
+            }));
+            notification.success({
+                message: `訂單更新成功`
             });
-        });
-        handlerResetEditOrder();
+            handlerResetEditOrder();
+        } catch (error) {
+            if (redirectIfInvalidToken(error, navigate))
+                return;
+
+            notification.warning({
+                message: `訂單更新失敗`,
+                description: `${error}`
+            });
+        }
     }
 
     // Editing Order 
@@ -402,7 +404,7 @@ const List = () => {
                     </Item>
 
                     <Item label='付款狀態'>
-                        <Checkbox defaultChecked={!editingOrder?.payment} onChange={value => handlerValue('payment', value)}>訂單未付款</Checkbox>
+                        <Checkbox checked={editingOrder ? !editingOrder.payment : false} onChange={value => handlerValue('payment', value)}>訂單未付款</Checkbox>
                     </Item>
 
                     <Item label='店家種類'>
