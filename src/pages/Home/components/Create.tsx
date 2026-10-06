@@ -49,13 +49,20 @@ const Create = () => {
             "Content-Type": "application/json",
         }
 
+        const amountNumber = Number(amount);
+        const barrelTypeNumber = Number(barrelType);
+        if (barrelType == null || !Number.isFinite(amountNumber) || !Number.isFinite(barrelTypeNumber)) {
+            notification.warning({ message: `訂單建立失敗` });
+            return;
+        }
+
         const bodyContent = JSON.stringify({
             "name": name,
             "phone": phone,
             "address": address,
-            "amount": amount,
+            "amount": amountNumber,
             "payment": !payment,
-            "barrelType": barrelType,
+            "barrelType": barrelTypeNumber,
             "sendBarrel": sendBarrel,
             "backBarrel": backBarrel,
             "customerType": customerType,

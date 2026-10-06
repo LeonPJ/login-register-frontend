@@ -320,19 +320,41 @@ const List = () => {
             "Content-Type": "application/json",
         }
 
+        const amountNumber = Number(editingOrder.amount);
+        const barrelTypeNumber = Number(editingOrder.barrelType);
+        const sendBarrelNumber = Number(editingOrder.sendBarrel);
+        const backBarrelNumber = Number(editingOrder.backBarrel);
+        if (editingOrder.amount == null || editingOrder.amount === '' || editingOrder.barrelType == null || !Number.isFinite(amountNumber) || !Number.isFinite(barrelTypeNumber) || !Number.isFinite(sendBarrelNumber) || !Number.isFinite(backBarrelNumber)) {
+            notification.warning({ message: `欄位格式錯誤` });
+            return;
+        }
+
+        const payload = {
+            name: editingOrder.name,
+            phone: editingOrder.phone,
+            address: editingOrder.address,
+            amount: amountNumber,
+            payment: editingOrder.payment,
+            barrelType: barrelTypeNumber,
+            sendBarrel: sendBarrelNumber,
+            backBarrel: backBarrelNumber,
+            customerType: editingOrder.customerType,
+            createdAt: editingOrder.createdAt,
+        };
+
         const reqOptions = {
             // url: `${process.env.REACT_APP_API_UPDATE!}/${order._id}`,
             url: `${Config.database.update}/${editingOrder._id}`,
             method: "PATCH",
             headers: headersList,
-            data: editingOrder,
+            data: payload,
         }
 
         try {
-            await axios.request(reqOptions);
+            const res = await axios.request(reqOptions);
             setOrdersData((orders: any) => orders.map((order: any) => {
                 if (order._id === editingOrder._id)
-                    return editingOrder;
+                    return { ...order, ...payload, updatedAt: res.data?.updatedAt ?? order.updatedAt };
                 return order;
             }));
             notification.success({
@@ -415,7 +437,7 @@ const List = () => {
                     </Item>
 
                     <Item label='瓦斯種類'>
-                        <Radio.Group value={editingOrder?.barrelType.toString()} onChange={value => handlerValue('barrelType', value)}>
+                        <Radio.Group value={editingOrder?.barrelType != null ? String(editingOrder.barrelType) : undefined} onChange={value => handlerValue('barrelType', value)}>
                             <Radio.Button value='5'>5 公斤</Radio.Button>
                             <Radio.Button value='10'>10 公斤</Radio.Button>
                             <Radio.Button value='16'>16 公斤</Radio.Button>
